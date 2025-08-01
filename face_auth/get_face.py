@@ -1,9 +1,14 @@
 import cv2
+import time
 
 """Abrimos la webcam (0 es decir, la default) para obtener la cara 
 de la persona y asi luego poder compararla con la base de datos"""
 
 def get_face():
+
+    print("La camara se abrira en 4 seg\n")
+    time.sleep(4)
+    
     cv2.namedWindow('Camara - Deteccion Facial', cv2.WINDOW_NORMAL)
 
     # Cargar el clasificador Haar
@@ -13,7 +18,6 @@ def get_face():
         print ("Error al cargar el clasificardor haar")
         exit()
 
-    # Abrir cámara una sola vez
     cap = cv2.VideoCapture(0)
 
     if not cap.isOpened():
@@ -32,11 +36,9 @@ def get_face():
 
             # Detectar caras
             faces = face_cascade.detectMultiScale(gray, 1.1, 4)
-
             # # Dibujar bounding boxes
             # for (x, y, w, h) in faces:
             #     cv2.rectangle(frame, (x, y), (x+w, y+h), (0, 255, 0), 2)
-
             # Mostrar en la misma ventana
             cv2.imshow('Camara - Deteccion Facial', frame)
 

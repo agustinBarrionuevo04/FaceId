@@ -23,14 +23,14 @@ def compare_faces(id_user):
             data_user = json.load(f)
         vector_user = np.array(data_user[0]["embedding"])
 
-        json_list = get_info_json()
+        json_list = get_name_json()
         """
         Comparamos el vector del usuario con los ya registrados 
         """
         found_match = False
         for j in json_list:
             if j == id_json:
-                continue  # no comparar contra sí mismo
+                continue
             
             path_j = os.path.join(directory, j)
             with open(path_j, "r") as f:
@@ -43,7 +43,7 @@ def compare_faces(id_user):
             
             if result[0]:
                 found_match = True
-                print("Acceso aceptado: Bienvenido al sistema ", j)
+                print("\nAcceso aceptado: Bienvenido al sistema ", j)
                 break
         
         if not found_match:
@@ -53,7 +53,7 @@ def compare_faces(id_user):
         print("Ocurrió un error inesperado:", str(e))
         
           
-def get_info_json():
+def get_name_json():
     directory = os.path.join(os.path.dirname(os.path.abspath(__file__)), "ids")
     files = os.listdir(directory)
     
