@@ -4,49 +4,27 @@ import time
 """Abrimos la webcam (0 es decir, la default) para obtener la cara 
 de la persona y asi luego poder compararla con la base de datos"""
 
-def get_face():
+def get_face(id_user=None):
 
-    print("La camara se abrira en 4 seg\n")
-    time.sleep(4)
+    # 1. Abrir la webcam
+    cam = cv2.VideoCapture(0)
     
-    cv2.namedWindow('Camara - Deteccion Facial', cv2.WINDOW_NORMAL)
+    if not cam.isOpened():
+        raise IOError("No se pudo acceder a la cámara")
 
-    # Cargar el clasificador Haar
-    face_cascade = cv2.CascadeClassifier(
-        cv2.data.haarcascades + 'haarcascade_frontalface_default.xml')
-    if face_cascade.empty() == True:
-        print ("Error al cargar el clasificardor haar")
-        exit()
+    print("\n\n\nPresioná 's' para sacar la foto, la camara se abrira en 4 segundos...")
+    time.sleep(4)
 
-    cap = cv2.VideoCapture(0)
+    while True:
+        ret, frame = cam.read()
+        cv2.imshow("Captura de rostro", frame)
+        key = cv2.waitKey(1)
+        if key == ord('s'):  # 's' para sacar la foto
+            print(f"Foto guardada como '{id_user}.jpg'")
+            break
 
-    if not cap.isOpened():
-        print("No se pudo acceder a la cámara")
-        exit()
-
-    try:
-        while True:
-            ret, frame = cap.read()
-            if not ret:
-                print("Error al capturar frame")
-                break
-
-            # Convertir a escala de grises
-            gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
-
-            # Detectar caras
-            faces = face_cascade.detectMultiScale(gray, 1.1, 4)
-            # # Dibujar bounding boxes
-            # for (x, y, w, h) in faces:
-            #     cv2.rectangle(frame, (x, y), (x+w, y+h), (0, 255, 0), 2)
-            # Mostrar en la misma ventana
-            cv2.imshow('Camara - Deteccion Facial', frame)
-
-            # Salir con ESC
-            if cv2.waitKey(1) & 0xFF == 27:
-                break
-
-    finally:
-        cap.release()
-        cv2.destroyAllWindows()
+    cam.release()
+    cv2.destroyAllWindows()
+    
+    return frame
 
