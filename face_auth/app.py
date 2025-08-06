@@ -1,74 +1,74 @@
 import requests
 import json
 import face_recognition
-import conn_db, face_recog, get_face
+import conn_db
+import face_recog
+import get_face
 
 
 def main():
-    #print("******************************Bienvenido******************************\n")
     print("\n***En caso de querer salir del programa preciona Ctrl+C o Ctrl+D***")
 
-    try:    
-        while 1:
-            response_user = input("\n0==Iniciar sesion o 1==Registrarse\n")
-            if int(response_user) == 0:
-                print("Vamos a utilizar su camara para obtener su id\n")
-                vector = face_recog.get_vector(get_face.get_face())
+    try:
+        while True:
+            response_user = input(
+                "\n0==Iniciar sesion o 1==Registrarse\n").strip()
 
-                vector_string = conn_db.np_array_to_Json(vector)
-                url = "http://127.0.0.1:8000/procesar-vector"
-                payload = {"vector": vector_string}
-                response = requests.post(url,json=payload)
-                
-                """Respuesta del servidor al cliente"""
-                val = response.json().get("Exist")
-                Name = response.json().get("Name")
-                
+            if response_user not in ("0", "1"):
+                print("Opción inválida, intenta nuevamente.")
+                continue
+
+            print("Vamos a utilizar su camara para obtener su id\n")
+            vector = face_recog.get_vector(get_face.get_face())
+            vector_string = conn_db.np_array_to_Json(vector)
+
+            url_verify = "http://127.0.0.1:8000/procesar-vector"
+            payload_verify = {"vector": vector_string}
+
+            response = requests.post(url_verify, json=payload_verify)
+
+            if response.status_code != 200:
+                print(
+                    f"Error en el servidor ({response.status_code}): {response.text}")
+                continue
+
+            data = response.json()
+            val = data.get("Exist")
+            name_db = data.get("Name")
+
+            if response_user == "0":
                 if val:
-                    print(f"Bienvenido {Name}, que gusto verte de nuevo :)!!")
+                    print(
+                        f"Bienvenido {name_db}, que gusto verte de nuevo :)!!")
                     exit(0)
                 else:
-                    print(f"Perdon!! No te pudimos encontrar prueba registrandote")
+                    print("No te encontramos en la base. Prueba registrándote.")
+                    continue
 
-            elif int(response_user) == 1:
-                print("Vamos a utilizar su camara para obtener su id\n")
-                vector = face_recog.get_vector(get_face.get_face())
-
-                vector_string = conn_db.np_array_to_Json(vector)
-                url = "http://127.0.0.1:8000/procesar-vector"
-                payload = {"vector": vector_string}
-                response = requests.post(url,json=payload)
-                
-                """Respuesta del servidor al cliente"""
-                val = response.json().get("Exist")
-                Name = response.json().get("Name")
-                
+            elif response_user == "1":
                 if val:
-                    print(f"Que haces {Name}!!!, anda a iniciar sesion :)!!")
-                    exit(0)
+                    print(
+                        f"Ya estás registrado como {name_db}. Iniciá sesión.")
+                    continue
                 else:
-                    name = input("Introduci un nombre de usuario: ")
-                    
-                    url = "http://127.0.0.1:8000/register"
-                    payload.update({"name": name}) 
-                    response = requests.post(url,json=payload)
-                    message = response.get("message")
+                    name = input("Introducí un nombre de usuario: ").strip()
 
-                    print(message)
+                    url_register = "http://127.0.0.1:8000/register"
+                    payload_register = {"vector": vector_string, "name": name}
+
+                    response_reg = requests.post(
+                        url_register, json=payload_register)
+
+                    if response_reg.status_code == 200:
+                        data_reg = response_reg.json()
+                        print(f"{data_reg.get('message')}")
+                    else:
+                        print(
+                            f"Error registrando usuario ({response_reg.status_code}): {response_reg.text}")
+
     except (KeyboardInterrupt, EOFError):
-        print("\nSaliendo del programa")  
-        exit(0)           
-            
+        print("\nSaliendo del programa...")
+        exit(0)
+
+
 main()
-
-    
-    
-    
-    
-
-
-
-
-    
-    
-
