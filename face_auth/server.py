@@ -2,7 +2,7 @@ from fastapi import FastAPI, Request
 from fastapi.responses import JSONResponse
 import json
 import numpy as np
-import conn_db
+from face_auth import conn_db
 
 app = FastAPI()
 
