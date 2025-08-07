@@ -44,6 +44,6 @@ def exist_user(vector_json):
     return False, None
 
 
-def compare_vectors(vec1, vec2, threshold=0.6):  # Luego colocar en un archivo utils
+def compare_vectors(vec1, vec2, threshold=0.6): 
     dist = np.linalg.norm(vec1 - vec2)
     return dist < threshold
