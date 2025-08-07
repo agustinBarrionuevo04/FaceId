@@ -1,9 +1,9 @@
 import requests
 import json
 import face_recognition
-import conn_db
-import face_recog
-import get_face
+from face_auth import conn_db
+from face_auth import face_recog
+from face_auth import get_face
 
 
 def main():

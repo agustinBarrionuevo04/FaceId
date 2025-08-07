@@ -3,8 +3,8 @@ import sqlite3
 import os
 import json
 import numpy as np
-import face_recog
-import get_face
+from face_auth import face_recog
+from face_auth import get_face
 import face_recognition
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
