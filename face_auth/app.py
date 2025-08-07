@@ -9,7 +9,7 @@ def main():
     try:
         while True:
             response_user = input(
-                "\n0==Iniciar sesion o 1==Registrarse\n").strip()
+                "\nIniciar sesion = 0 o Registrarse = 1\n").strip()
 
             if response_user not in ("0", "1"):
                 print("Opción inválida, intenta nuevamente.")
@@ -19,7 +19,7 @@ def main():
             vector = face_recog.get_vector(get_face.get_face())
             vector_string = conn_db.np_array_to_Json(vector)
 
-            url_verify = "https://faceid-authentication.onrender.com/procesar-vector"
+            url_verify = "https://https://faceidapi.onrender.com/procesar-vector"
             payload_verify = {"vector": vector_string}
 
             response = requests.post(url_verify, json=payload_verify)
@@ -50,7 +50,7 @@ def main():
                 else:
                     name = input("Introducí un nombre de usuario: ").strip()
 
-                    url_register = "https://faceid-authentication.onrender.com/register"
+                    url_register = "https://https://faceidapi.onrender.com/register"
                     payload_register = {"vector": vector_string, "name": name}
 
                     response_reg = requests.post(
