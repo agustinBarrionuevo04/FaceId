@@ -1,33 +1,62 @@
+"""
+Face Vector Extraction Module
+-----------------------------
+
+This module provides utilities to process images (frames) and extract a unique
+face embedding vector using the `face_recognition` library.
+
+The embedding vector is a numerical representation of a detected face and can
+be used for tasks such as user verification or identification.
+"""
+
 import os
-import face_recognition
 import json
-
-"""Realizamos el escaneo de las imagenes para obtener un json con informacion
-de la persona mas un vector embebido el cual es unico"""
+import face_recognition
 
 
-def get_vector(frame, id_user=None):
+def get_vector(frame, id_user: str | None = None):
+    """
+    Extract the embedding vector from a given image frame.
+
+    Args:
+        frame (numpy.ndarray): Image frame (BGR format, e.g., from OpenCV).
+        id_user (str | None): Optional user ID associated with the frame.
+
+    Returns:
+        numpy.ndarray | None:
+            - A 128-dimensional embedding vector if a face is detected and
+              successfully encoded.
+            - None if no face is detected or encoding fails.
+
+    Workflow:
+        1. Convert the image from BGR to RGB.
+        2. Detect face locations in the frame.
+        3. Encode the face into a numerical vector.
+        4. Return the first detected face encoding.
+
+    Exceptions:
+        Prints an error message and returns None if any unexpected error occurs.
+    """
     try:
-        BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+        base_dir = os.path.dirname(os.path.abspath(__file__))
 
-        # Convertimos la imagen de BGR a RGB
+        # Convert the image from BGR (OpenCV) to RGB (face_recognition expects RGB)
         image = frame[:, :, ::-1].copy()
 
-        """Pasamos imagen del frame como un objeto para utilizarlo con face_recognition"""
+        # Detect faces in the image
         face_location = face_recognition.face_locations(image)
-        
         if not face_location:
-            print("No se detecto ningun rostro en la captura")
+            print("No face detected in the captured frame.")
             return None
 
-        """Utilizamos la imagen en el objeto para encondearlo como un vector embebido"""
+        # Encode the detected face into an embedding vector
         face_encoding = face_recognition.face_encodings(image, face_location)
-        
         if not face_encoding:
-            print("No se pudo codificar correctamente el vector de su rostro :(")
+            print("Failed to encode face vector :(")
             return None
 
         return face_encoding[0]
 
     except Exception as e:
-        print("Ocurrió un error inesperado:", str(e))
+        print("An unexpected error occurred:", str(e))
+        return None
